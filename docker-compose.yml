@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:17.10-alpine3.23
+    container_name: baton-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${BATON_POSTGRES_DB:-baton}
+      POSTGRES_USER: ${BATON_DB_USERNAME:-baton}
+      POSTGRES_PASSWORD: ${BATON_DB_PASSWORD:-baton}
+      TZ: UTC
+    ports:
+      - "${BATON_POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - baton-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  baton-postgres-data:
