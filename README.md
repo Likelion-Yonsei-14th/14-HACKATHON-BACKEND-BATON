@@ -26,19 +26,17 @@ LLM은 자연어를 해석하지만 실행 여부를 결정하지 않습니다. 
 
 ## 기술 스택
 
-초기 구성안이며 프로젝트 초기화 시 버전을 확정합니다.
-
 | 구분 | 기술 |
 | --- | --- |
-| 언어 | Java |
-| 프레임워크 | Spring Boot · Spring Data JPA · Spring AI |
-| 데이터베이스 | PostgreSQL |
+| 언어 | Java 17 |
+| 프레임워크 | Spring Boot 4.1.0 · Spring MVC · Validation · Spring Data JPA |
+| 데이터베이스 | PostgreSQL 17 |
 | 스키마 관리 | Flyway |
-| AI | OpenAI API structured output |
-| 플랫폼 | Slack Web API · Events API |
-| API 문서 | springdoc OpenAPI |
-| 빌드 | Gradle |
+| 운영 상태 | Spring Boot Actuator |
+| 빌드 | Gradle 9.5.1 |
 | 로컬 인프라 | Docker Compose |
+
+Spring AI, OpenAI API, Slack Web API와 OpenAPI 문서화는 관련 기능 구현 단계에서 의존성을 추가합니다.
 
 ## 도메인 모델
 
@@ -104,7 +102,7 @@ AuditLogService
 
 ### 사전 요구사항
 
-- 프로젝트에서 확정한 JDK 버전
+- JDK 17
 - Docker Desktop
 
 ### 로컬 인프라
@@ -112,12 +110,12 @@ AuditLogService
 ```bash
 docker compose up -d
 docker compose ps
+docker compose down
 ```
 
 ### 서버 실행
 
 ```bash
-cp .env.example .env
 ./gradlew bootRun
 ```
 
@@ -128,11 +126,11 @@ cp .env.example .env
 ./gradlew build
 ```
 
-실제 명령과 포트는 프로젝트 초기화 후 Gradle 및 Docker 설정과 함께 확정합니다.
+서버 기본 포트는 `8080`, PostgreSQL 기본 포트는 `5432`입니다. 서버 기동 후 `http://localhost:8080/actuator/health`에서 상태를 확인할 수 있습니다.
 
 ## 환경변수
 
-실제 token과 secret은 저장소에 커밋하지 않습니다. 공개 가능한 변수 목록은 [`.env.example`](.env.example)에 유지합니다.
+Docker Compose는 저장소 루트의 `.env`를 자동으로 읽습니다. Spring Boot 실행 환경은 shell 또는 IDE에서 환경변수를 주입하며, 별도 값이 없으면 로컬 기본값을 사용합니다. 실제 token과 secret은 저장소에 커밋하지 않고 공개 가능한 변수 목록만 [`.env.example`](.env.example)에 유지합니다.
 
 주요 범주:
 
