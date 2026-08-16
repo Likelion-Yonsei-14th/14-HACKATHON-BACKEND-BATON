@@ -18,9 +18,7 @@ LLM은 자연어를 해석하지만 실행 여부를 결정하지 않습니다. 
 
 ## 제품 불변조건
 
-- AI는 새로운 결정, 일정, 비용, 약속 또는 범위를 만들지 않습니다.
 - 모든 Branch는 `Condition → Decision → Action`을 저장합니다.
-- 하나의 BATON은 최대 한 번만 자동 handoff를 실행합니다.
 - 사용자가 직접 개입하면 기존 자동화를 중지합니다.
 - BATON-generated message는 다른 BATON의 trigger가 되지 않습니다.
 - 애매함, 새 질문, 복수 분기 매칭, 범위 초과, 연결 오류는 자동 실행하지 않습니다.
@@ -189,4 +187,3 @@ JPA는 스키마를 임의 생성하거나 변경하지 않고 검증만 수행�
 ## 관련 저장소
 
 - Frontend: `Likelion-Yonsei-14th/14-HACKATHON-FRONTEND-BATON`
-
