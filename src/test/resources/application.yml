@@ -11,3 +11,21 @@ spring:
 
   flyway:
     enabled: false
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+
+openai:
+  api-key: test-key
+  model: gpt-4o-mini
+  base-url: https://api.openai.com/v1
+
+security:
+  token-encryption-key: test-token-encryption-key
+
+slack:
+  client-id: test-client-id
+  client-secret: test-client-secret
+  signing-secret: test-signing-secret
+  redirect-uri: http://localhost:8080/api/platform-connections/slack/callback

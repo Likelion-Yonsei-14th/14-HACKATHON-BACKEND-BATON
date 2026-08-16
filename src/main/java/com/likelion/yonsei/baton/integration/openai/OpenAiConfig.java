@@ -17,12 +17,12 @@ public class OpenAiConfig {
 	private static final Duration READ_TIMEOUT = Duration.ofSeconds(30);
 
 	@Bean
-	public RestClient openAiRestClient(OpenAiProperties properties) {
+	public RestClient openAiRestClient(RestClient.Builder restClientBuilder, OpenAiProperties properties) {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setConnectTimeout(CONNECT_TIMEOUT);
 		requestFactory.setReadTimeout(READ_TIMEOUT);
 
-		return RestClient.builder()
+		return restClientBuilder
 				.baseUrl(properties.baseUrl())
 				.requestFactory(requestFactory)
 				.defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiKey())

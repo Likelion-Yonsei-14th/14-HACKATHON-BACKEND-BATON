@@ -35,8 +35,12 @@ LLM은 자연어를 해석하지만 실행 여부를 결정하지 않습니다. 
 | 운영 상태 | Spring Boot Actuator |
 | 빌드 | Gradle 9.5.1 |
 | 로컬 인프라 | Docker Compose |
+| LLM 연동 | OpenAI Chat Completions API (RestClient) |
+| 외부 플랫폼 연동 | Slack Web API, Slack OAuth v2, Slack Events API (RestClient) |
 
-Spring AI, OpenAI API, Slack Web API와 OpenAPI 문서화는 관련 기능 구현 단계에서 의존성을 추가합니다.
+OpenAPI(Swagger) 문서화는 관련 기능 구현 단계에서 의존성을 추가합니다.
+
+모든 API는 `/api` prefix 아래에 위치합니다. 인증은 `POST /api/users` 응답의 `id`를 `X-User-Id` 헤더로 전달하는 방식으로 임시 구현되어 있습니다(정식 로그인/세션·JWT 발급 API는 아직 설계되지 않았습니다).
 
 ## 도메인 모델
 
