@@ -6,6 +6,7 @@ import com.likelion.yonsei.baton.domain.baton.entity.BatonStatus;
 import com.likelion.yonsei.baton.domain.baton.exception.BatonErrorCode;
 import com.likelion.yonsei.baton.domain.baton.repository.BatonRepository;
 import com.likelion.yonsei.baton.domain.conversation.service.ConversationService;
+import com.likelion.yonsei.baton.domain.message.entity.Message;
 import com.likelion.yonsei.baton.domain.message.service.MessageService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,16 @@ public class BatonService {
 	@Transactional
 	public Baton create(Long userId, Long conversationId, Long triggerMessageId, boolean autoSendEnabled, LocalDateTime expiresAt) {
 		conversationService.getById(conversationId, userId);
-		messageService.getById(triggerMessageId);
+
+		// Ownership-scoped lookup alone isn't enough here: a caller could own conversation A but pass
+		// a trigger_message_id from their own conversation B (or, before this check existed, any
+		// tenant's message once the underlying getById was scoped). Require it to actually be a
+		// message of the conversation being linked.
+		Message triggerMessage = messageService.getById(triggerMessageId, userId);
+		if (!triggerMessage.getConversationId().equals(conversationId)) {
+			throw new BusinessException(BatonErrorCode.TRIGGER_MESSAGE_NOT_IN_CONVERSATION);
+		}
+
 		if (batonRepository.existsByTriggerMessageId(triggerMessageId)) {
 			throw new BusinessException(BatonErrorCode.TRIGGER_MESSAGE_ALREADY_USED);
 		}

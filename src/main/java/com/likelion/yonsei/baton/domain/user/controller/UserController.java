@@ -5,6 +5,7 @@ import com.likelion.yonsei.baton.common.web.CurrentUserId;
 import com.likelion.yonsei.baton.domain.user.dto.UserDeleteResponse;
 import com.likelion.yonsei.baton.domain.user.dto.UserResponse;
 import com.likelion.yonsei.baton.domain.user.dto.UserSignUpRequest;
+import com.likelion.yonsei.baton.domain.user.dto.UserSignUpResponse;
 import com.likelion.yonsei.baton.domain.user.dto.UserUpdateRequest;
 import com.likelion.yonsei.baton.domain.user.entity.User;
 import com.likelion.yonsei.baton.domain.user.service.UserService;
@@ -36,9 +37,9 @@ public class UserController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ApiResponse<UserResponse> signUp(@Valid @RequestBody UserSignUpRequest request) {
-		User user = userService.signUp(request);
-		return ApiResponse.success(UserResponse.from(user));
+	public ApiResponse<UserSignUpResponse> signUp(@Valid @RequestBody UserSignUpRequest request) {
+		UserService.SignUpResult result = userService.signUp(request);
+		return ApiResponse.success(UserSignUpResponse.from(result.user(), result.apiKey()));
 	}
 
 	@GetMapping("/me")

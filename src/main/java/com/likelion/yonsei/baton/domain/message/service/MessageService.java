@@ -64,8 +64,8 @@ public class MessageService {
 		return messageRepository.findByConversationIdOrderBySentAtDesc(conversationId, PageRequest.of(0, pageSize));
 	}
 
-	public Message getById(Long id) {
-		return messageRepository.findById(id)
+	public Message getById(Long id, Long userId) {
+		return messageRepository.findByIdAndUserId(id, userId)
 				.orElseThrow(() -> new BusinessException(MessageErrorCode.MESSAGE_NOT_FOUND));
 	}
 
