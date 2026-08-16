@@ -32,23 +32,33 @@ public class OpenAiClient {
 	}
 
 	public String chat(String prompt) {
+		requireConfigured();
+		OpenAiChatRequest request = OpenAiChatRequest.of(properties.model(), List.of(OpenAiChatMessage.user(prompt)));
+		return extractContent(callChatCompletions(request));
+	}
+
+	/** Structured-output call: instructs the model to return a single JSON object matching the caller's documented schema. */
+	public String chatJson(String systemPrompt, String userPrompt) {
+		requireConfigured();
+		OpenAiChatRequest request = OpenAiChatRequest.ofJson(
+				properties.model(),
+				List.of(OpenAiChatMessage.system(systemPrompt), OpenAiChatMessage.user(userPrompt))
+		);
+		return extractContent(callChatCompletions(request));
+	}
+
+	private void requireConfigured() {
 		if (properties.apiKey() == null || properties.apiKey().isBlank()) {
 			log.error("OpenAI API key is not configured");
 			throw new BusinessException(OpenAiErrorCode.MISCONFIGURED);
 		}
+	}
 
-		OpenAiChatRequest request = new OpenAiChatRequest(
-				properties.model(),
-				List.of(OpenAiChatMessage.user(prompt))
-		);
-
-		OpenAiChatResponse response = callChatCompletions(request);
-
+	private String extractContent(OpenAiChatResponse response) {
 		if (response == null || response.choices() == null || response.choices().isEmpty()) {
 			log.error("OpenAI returned an empty response body");
 			throw new BusinessException(OpenAiErrorCode.EMPTY_RESPONSE);
 		}
-
 		return response.choices().get(0).message().content();
 	}
 

@@ -2,6 +2,10 @@ spring:
   application:
     name: baton
 
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+
   datasource:
     url: ${BATON_DB_URL:jdbc:postgresql://localhost:5432/baton}
     username: ${BATON_DB_USERNAME:baton}
@@ -26,6 +30,19 @@ openai:
   api-key: ${OPENAI_API_KEY:}
   model: ${OPENAI_MODEL:gpt-4o-mini}
   base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+
+security:
+  token-encryption-key: ${TOKEN_ENCRYPTION_KEY:CHANGE_ME}
+
+slack:
+  client-id: ${SLACK_CLIENT_ID:}
+  client-secret: ${SLACK_CLIENT_SECRET:}
+  signing-secret: ${SLACK_SIGNING_SECRET:}
+  redirect-uri: ${SLACK_REDIRECT_URI:http://localhost:8080/api/platform-connections/slack/callback}
+
+app:
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
 server:
   port: ${BATON_SERVER_PORT:8080}
