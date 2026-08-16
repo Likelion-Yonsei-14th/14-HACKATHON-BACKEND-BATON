@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Resolves the authenticated user's id from the {@code X-User-Id} request header.
+ * Resolves the authenticated user's id from an {@code Authorization: Bearer <api key>} header.
  *
- * <p>The API spec calls for "Bearer Token 또는 Session Cookie" auth, but no login/token-issuing
- * endpoint is defined anywhere in the spec (only {@code POST /users} signup). Until a real auth
- * flow is designed, callers authenticate by passing the id returned from signup directly in this
- * header. Swap this resolver's implementation out once real session/JWT issuance exists.
+ * <p>The API spec calls for "Bearer Token 또는 Session Cookie" auth but defines no login/token
+ * endpoint beyond {@code POST /users} signup, which now returns a one-time opaque API key. Only
+ * its SHA-256 hash is stored server-side, so this is a real (if minimal) bearer-token scheme, not
+ * a stand-in — swap it out only if a session/JWT-issuing login flow is designed later.
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

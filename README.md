@@ -42,7 +42,7 @@ LLM은 자연어를 해석하지만 실행 여부를 결정하지 않습니다. 
 
 OpenAPI(Swagger) 문서화는 관련 기능 구현 단계에서 의존성을 추가합니다.
 
-모든 API는 `/api` prefix 아래에 위치합니다. 인증은 `POST /api/users` 응답의 `id`를 `X-User-Id` 헤더로 전달하는 방식으로 임시 구현되어 있습니다(정식 로그인/세션·JWT 발급 API는 아직 설계되지 않았습니다).
+모든 API는 `/api` prefix 아래에 위치합니다. 인증은 `POST /api/users` 응답에 1회만 노출되는 `api_key`를 `Authorization: Bearer <api_key>` 헤더로 전달하는 방식입니다(서버에는 SHA-256 해시만 저장됩니다). 별도의 로그인/세션·JWT 발급 API는 아직 설계되지 않았습니다.
 
 ## 도메인 모델
 

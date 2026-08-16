@@ -1,5 +1,6 @@
 package com.likelion.yonsei.baton.domain.user.service;
 
+import com.likelion.yonsei.baton.common.crypto.ApiKeyGenerator;
 import com.likelion.yonsei.baton.common.exception.BusinessException;
 import com.likelion.yonsei.baton.domain.user.dto.UserSignUpRequest;
 import com.likelion.yonsei.baton.domain.user.dto.UserUpdateRequest;
@@ -16,25 +17,30 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final ApiKeyGenerator apiKeyGenerator;
 
-	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ApiKeyGenerator apiKeyGenerator) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.apiKeyGenerator = apiKeyGenerator;
 	}
 
 	@Transactional
-	public User signUp(UserSignUpRequest request) {
+	public SignUpResult signUp(UserSignUpRequest request) {
 		if (userRepository.existsByEmail(request.email())) {
 			throw new BusinessException(UserErrorCode.EMAIL_ALREADY_EXISTS);
 		}
+		String apiKey = apiKeyGenerator.generate();
 		User user = new User(
 				request.email(),
 				request.name(),
 				passwordEncoder.encode(request.password()),
+				apiKeyGenerator.hash(apiKey),
 				request.timezone(),
 				request.language()
 		);
-		return userRepository.save(user);
+		User saved = userRepository.save(user);
+		return new SignUpResult(saved, apiKey);
 	}
 
 	public User getById(Long userId) {
@@ -53,5 +59,9 @@ public class UserService {
 	public void delete(Long userId) {
 		User user = getById(userId);
 		userRepository.delete(user);
+	}
+
+	/** apiKey is the one-time raw value; only its hash is ever persisted. */
+	public record SignUpResult(User user, String apiKey) {
 	}
 }
