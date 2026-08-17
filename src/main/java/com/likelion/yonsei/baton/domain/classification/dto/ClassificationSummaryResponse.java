@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 public record ClassificationSummaryResponse(
 		Long id,
+		Long replyMessageId,
 		Long selectedBranchId,
 		BigDecimal confidence,
 		boolean isAmbiguous,
@@ -20,6 +21,7 @@ public record ClassificationSummaryResponse(
 	public static ClassificationSummaryResponse from(Classification classification) {
 		return new ClassificationSummaryResponse(
 				classification.getId(),
+				classification.getReplyMessageId(),
 				classification.getSelectedBranchId(),
 				classification.getConfidence(),
 				classification.isAmbiguous(),
