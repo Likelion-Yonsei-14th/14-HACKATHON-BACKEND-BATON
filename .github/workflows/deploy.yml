@@ -1,0 +1,21 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, baton]
+    steps:
+      - name: Pull latest code
+        run: |
+          cd /opt/baton/backend
+          git fetch origin main
+          git reset --hard origin/main
+
+      - name: Rebuild and restart backend
+        run: |
+          cd /opt/baton
+          docker compose build backend
+          docker compose up -d backend
