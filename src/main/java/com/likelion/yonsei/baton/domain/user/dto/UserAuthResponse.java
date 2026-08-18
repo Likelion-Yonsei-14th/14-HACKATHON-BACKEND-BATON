@@ -4,8 +4,8 @@ import com.likelion.yonsei.baton.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 
-/** apiKey is returned only here, once, at signup — it is never retrievable again. */
-public record UserSignUpResponse(
+/** apiKey is returned only here, once, at signup or login — it is never retrievable again afterward. */
+public record UserAuthResponse(
 		Long id,
 		String email,
 		String name,
@@ -15,8 +15,8 @@ public record UserSignUpResponse(
 		LocalDateTime createdAt
 ) {
 
-	public static UserSignUpResponse from(User user, String apiKey) {
-		return new UserSignUpResponse(
+	public static UserAuthResponse from(User user, String apiKey) {
+		return new UserAuthResponse(
 				user.getId(),
 				user.getEmail(),
 				user.getName(),
