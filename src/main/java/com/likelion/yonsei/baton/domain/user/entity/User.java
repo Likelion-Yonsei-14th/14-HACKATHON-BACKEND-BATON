@@ -55,6 +55,11 @@ public class User {
 		this.language = language;
 	}
 
+	/** Rotates the stored hash so the previously issued api_key stops working immediately. */
+	public void rotateApiKeyHash(String newApiKeyHash) {
+		this.apiKeyHash = newApiKeyHash;
+	}
+
 	public void update(String name, String timezone, String language) {
 		if (name != null) {
 			this.name = name;
