@@ -128,7 +128,9 @@ public class PlatformConnectionService {
 		int created = 0;
 		int updated = 0;
 		for (SlackConversationsListResponse.SlackChannel channel : response.channels()) {
-			ConversationType type = channel.isIm() || channel.isMpim() ? ConversationType.DM : ConversationType.CHANNEL;
+			ConversationType type = Boolean.TRUE.equals(channel.isIm()) || Boolean.TRUE.equals(channel.isMpim())
+					? ConversationType.DM
+					: ConversationType.CHANNEL;
 			var existing = conversationRepository.findByPlatformConnectionIdAndExternalConversationIdAndExternalThreadId(
 					connection.getId(), channel.id(), null);
 			if (existing.isPresent()) {
