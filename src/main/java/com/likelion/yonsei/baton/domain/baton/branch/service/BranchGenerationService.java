@@ -44,6 +44,31 @@ public class BranchGenerationService {
 			"response_text": string | null, "action_type": string, "execution_mode": string}]}
 			""";
 
+	/**
+	 * Qwen3 0.6B (the local fallback model) can't reliably follow the full rule set above — it answers
+	 * in English, invents field values, and leaves response_text null even for SEND_REPLY branches. A
+	 * worked example and a much shorter rule set gets it to actually produce usable Korean branches.
+	 */
+	private static final String LOCAL_SYSTEM_PROMPT = """
+			/no_think
+			You generate 2-3 short reply-branches for a chat message. ALWAYS write name, condition_text, \
+			decision_text, response_text in the SAME language as the conversation below (Korean if the \
+			conversation is Korean). response_text must be an actual ready-to-send reply, never null or empty, \
+			for action_type SEND_REPLY.
+
+			Output ONLY this JSON, nothing else:
+			{"branches": [{"name": string, "condition_text": string, "decision_text": string, \
+			"response_text": string, "action_type": "SEND_REPLY", "execution_mode": "AUTO"}]}
+
+			Example — conversation "내일 3시에 만날까요?":
+			{"branches": [{"name": "수락", "condition_text": "상대가 시간에 동의함", \
+			"decision_text": "약속을 확정한다", "response_text": "네 좋습니다, 내일 3시에 뵙겠습니다!", \
+			"action_type": "SEND_REPLY", "execution_mode": "AUTO"}, \
+			{"name": "다른 시간 제안", "condition_text": "상대가 다른 시간을 제안함", \
+			"decision_text": "제안된 시간을 확인 후 답한다", "response_text": "알겠습니다, 그 시간으로 조정하겠습니다.", \
+			"action_type": "SEND_REPLY", "execution_mode": "AUTO"}]}
+			""";
+
 	private final LlmRouter llmRouter;
 	private final ObjectMapper objectMapper;
 	private final BatonService batonService;
@@ -72,7 +97,8 @@ public class BranchGenerationService {
 				baton.getConversationId(), PageRequest.of(0, CONTEXT_MESSAGE_LIMIT));
 		String userPrompt = buildUserPrompt(recentMessages, additionalInstruction);
 
-		String json = llmRouter.forUser(userId).chatJson(SYSTEM_PROMPT, userPrompt);
+		String systemPrompt = llmRouter.isLocal(userId) ? LOCAL_SYSTEM_PROMPT : SYSTEM_PROMPT;
+		String json = llmRouter.forUser(userId).chatJson(systemPrompt, userPrompt);
 		AiBranchDraft.Envelope envelope = parse(json);
 
 		int sortOrder = 0;
