@@ -12,6 +12,7 @@ import com.likelion.yonsei.baton.domain.platform.repository.PlatformConnectionRe
 import com.likelion.yonsei.baton.domain.platform.support.SlackOAuthStateStore;
 import com.likelion.yonsei.baton.integration.slack.SlackApiClient;
 import com.likelion.yonsei.baton.integration.slack.SlackOAuthClient;
+import com.likelion.yonsei.baton.integration.slack.SlackUserInfoResponse;
 import com.likelion.yonsei.baton.integration.slack.dto.SlackConversationsListResponse;
 import com.likelion.yonsei.baton.integration.slack.dto.SlackOAuthTokenResponse;
 import org.springframework.stereotype.Service;
@@ -134,9 +135,16 @@ public class PlatformConnectionService {
 			var existing = conversationRepository.findByPlatformConnectionIdAndExternalConversationIdAndExternalThreadId(
 					connection.getId(), channel.id(), null);
 			if (existing.isPresent()) {
+				Conversation existingConversation = existing.get();
+				if (type == ConversationType.DM && channel.user() != null && existingConversation.getCounterpartName() == null) {
+					existingConversation.updateCounterpartName(resolveDisplayName(accessToken, channel.user()));
+				}
 				updated++;
 				continue;
 			}
+			String counterpartName = type == ConversationType.DM && channel.user() != null
+					? resolveDisplayName(accessToken, channel.user())
+					: null;
 			Conversation conversation = new Conversation(
 					connection.getId(),
 					channel.id(),
@@ -144,7 +152,7 @@ public class PlatformConnectionService {
 					type,
 					channel.name(),
 					channel.user(),
-					null,
+					counterpartName,
 					null
 			);
 			conversationRepository.save(conversation);
@@ -154,6 +162,12 @@ public class PlatformConnectionService {
 		LocalDateTime now = LocalDateTime.now(clock);
 		connection.markSynced(now);
 		return new ConversationsSyncResult(created, updated, now);
+	}
+
+	/** Best-effort — a Slack user lookup failure shouldn't stop the rest of the conversation sync. */
+	private String resolveDisplayName(String accessToken, String slackUserId) {
+		SlackUserInfoResponse info = slackApiClient.getUserInfo(accessToken, slackUserId);
+		return info != null ? info.resolveDisplayName(slackUserId) : slackUserId;
 	}
 
 	public record ConversationsSyncResult(int createdCount, int updatedCount, LocalDateTime lastSyncedAt) {

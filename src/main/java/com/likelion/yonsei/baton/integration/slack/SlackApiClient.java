@@ -39,6 +39,17 @@ public class SlackApiClient {
 		return response;
 	}
 
+	/** Returns null on any failure — a missing display name shouldn't fail the whole conversations sync. */
+	public SlackUserInfoResponse getUserInfo(String accessToken, String userId) {
+		try {
+			SlackUserInfoResponse response = get(accessToken, "/users.info?user=%s".formatted(userId), SlackUserInfoResponse.class);
+			return response.ok() ? response : null;
+		} catch (Exception e) {
+			log.warn("Slack users.info failed for user={}", userId, e);
+			return null;
+		}
+	}
+
 	public SlackHistoryResponse fetchHistory(String accessToken, String channelId, int limit) {
 		SlackHistoryResponse response = get(
 				accessToken,
