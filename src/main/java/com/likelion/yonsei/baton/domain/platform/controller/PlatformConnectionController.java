@@ -5,6 +5,7 @@ import com.likelion.yonsei.baton.common.response.ApiResponse;
 import com.likelion.yonsei.baton.common.web.CurrentUserId;
 import com.likelion.yonsei.baton.domain.platform.dto.ConversationsSyncResponse;
 import com.likelion.yonsei.baton.domain.platform.dto.PlatformConnectionDisconnectResponse;
+import com.likelion.yonsei.baton.domain.platform.dto.PlatformConnectionListResponse;
 import com.likelion.yonsei.baton.domain.platform.dto.PlatformConnectionResponse;
 import com.likelion.yonsei.baton.domain.platform.dto.PlatformConnectionSummaryResponse;
 import com.likelion.yonsei.baton.domain.platform.dto.SlackConnectResponse;
@@ -47,11 +48,11 @@ public class PlatformConnectionController {
 	}
 
 	@GetMapping
-	public ApiResponse<List<PlatformConnectionSummaryResponse>> list(@CurrentUserId Long userId) {
+	public ApiResponse<PlatformConnectionListResponse> list(@CurrentUserId Long userId) {
 		List<PlatformConnectionSummaryResponse> connections = platformConnectionService.list(userId).stream()
 				.map(PlatformConnectionSummaryResponse::from)
 				.toList();
-		return ApiResponse.success(connections);
+		return ApiResponse.success(new PlatformConnectionListResponse(connections));
 	}
 
 	@GetMapping("/slack/connect")
