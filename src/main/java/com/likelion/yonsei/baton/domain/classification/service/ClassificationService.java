@@ -10,8 +10,7 @@ import com.likelion.yonsei.baton.domain.classification.entity.ClassificationResu
 import com.likelion.yonsei.baton.domain.classification.exception.ClassificationErrorCode;
 import com.likelion.yonsei.baton.domain.classification.repository.ClassificationRepository;
 import com.likelion.yonsei.baton.domain.message.entity.Message;
-import com.likelion.yonsei.baton.integration.openai.OpenAiClient;
-import com.likelion.yonsei.baton.integration.openai.OpenAiProperties;
+import com.likelion.yonsei.baton.integration.llm.LlmRouter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
@@ -50,21 +49,18 @@ public class ClassificationService {
 
 	private final ClassificationRepository classificationRepository;
 	private final BatonService batonService;
-	private final OpenAiClient openAiClient;
-	private final OpenAiProperties openAiProperties;
+	private final LlmRouter llmRouter;
 	private final ObjectMapper objectMapper;
 
 	public ClassificationService(
 			ClassificationRepository classificationRepository,
 			BatonService batonService,
-			OpenAiClient openAiClient,
-			OpenAiProperties openAiProperties,
+			LlmRouter llmRouter,
 			ObjectMapper objectMapper
 	) {
 		this.classificationRepository = classificationRepository;
 		this.batonService = batonService;
-		this.openAiClient = openAiClient;
-		this.openAiProperties = openAiProperties;
+		this.llmRouter = llmRouter;
 		this.objectMapper = objectMapper;
 	}
 
@@ -89,7 +85,7 @@ public class ClassificationService {
 	@Transactional
 	public Classification classify(Baton baton, Message reply, List<Branch> branches) {
 		String userPrompt = buildUserPrompt(reply, branches);
-		String json = openAiClient.chatJson(SYSTEM_PROMPT, userPrompt);
+		String json = llmRouter.forUser(baton.getUserId()).chatJson(SYSTEM_PROMPT, userPrompt);
 		AiClassificationResult result = parse(json);
 
 		boolean branchIdValid = result.selectedBranchId() != null
@@ -108,7 +104,7 @@ public class ClassificationService {
 				extractedJson,
 				result.reasoningSummary(),
 				status,
-				openAiProperties.model()
+				llmRouter.modelNameForUser(baton.getUserId())
 		);
 		return classificationRepository.save(classification);
 	}

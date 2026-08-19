@@ -78,7 +78,7 @@ public class UserService {
 	@Transactional
 	public User update(Long userId, UserUpdateRequest request) {
 		User user = getById(userId);
-		user.update(request.name(), request.timezone(), request.language());
+		user.update(request.name(), request.timezone(), request.language(), request.llmProvider());
 		return user;
 	}
 
