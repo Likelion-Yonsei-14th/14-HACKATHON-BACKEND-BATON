@@ -1,5 +1,6 @@
 package com.likelion.yonsei.baton.domain.user.dto;
 
+import com.likelion.yonsei.baton.domain.user.entity.LlmProvider;
 import com.likelion.yonsei.baton.domain.user.entity.User;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ public record UserResponse(
 		String name,
 		String timezone,
 		String language,
+		LlmProvider llmProvider,
 		LocalDateTime createdAt,
 		LocalDateTime updatedAt
 ) {
@@ -21,6 +23,7 @@ public record UserResponse(
 				user.getName(),
 				user.getTimezone(),
 				user.getLanguage(),
+				user.getLlmProvider(),
 				user.getCreatedAt(),
 				user.getUpdatedAt()
 		);

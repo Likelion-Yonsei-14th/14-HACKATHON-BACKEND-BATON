@@ -1,0 +1,2 @@
+ALTER TABLE users
+    ADD COLUMN llm_provider VARCHAR(30) NOT NULL DEFAULT 'LOCAL';

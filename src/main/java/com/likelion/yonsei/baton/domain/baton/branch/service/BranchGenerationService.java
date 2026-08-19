@@ -8,7 +8,7 @@ import com.likelion.yonsei.baton.domain.baton.entity.Baton;
 import com.likelion.yonsei.baton.domain.baton.service.BatonService;
 import com.likelion.yonsei.baton.domain.message.entity.Message;
 import com.likelion.yonsei.baton.domain.message.repository.MessageRepository;
-import com.likelion.yonsei.baton.integration.openai.OpenAiClient;
+import com.likelion.yonsei.baton.integration.llm.LlmRouter;
 import com.likelion.yonsei.baton.integration.openai.exception.OpenAiErrorCode;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -44,20 +44,20 @@ public class BranchGenerationService {
 			"response_text": string | null, "action_type": string, "execution_mode": string}]}
 			""";
 
-	private final OpenAiClient openAiClient;
+	private final LlmRouter llmRouter;
 	private final ObjectMapper objectMapper;
 	private final BatonService batonService;
 	private final MessageRepository messageRepository;
 	private final BranchRepository branchRepository;
 
 	public BranchGenerationService(
-			OpenAiClient openAiClient,
+			LlmRouter llmRouter,
 			ObjectMapper objectMapper,
 			BatonService batonService,
 			MessageRepository messageRepository,
 			BranchRepository branchRepository
 	) {
-		this.openAiClient = openAiClient;
+		this.llmRouter = llmRouter;
 		this.objectMapper = objectMapper;
 		this.batonService = batonService;
 		this.messageRepository = messageRepository;
@@ -72,7 +72,7 @@ public class BranchGenerationService {
 				baton.getConversationId(), PageRequest.of(0, CONTEXT_MESSAGE_LIMIT));
 		String userPrompt = buildUserPrompt(recentMessages, additionalInstruction);
 
-		String json = openAiClient.chatJson(SYSTEM_PROMPT, userPrompt);
+		String json = llmRouter.forUser(userId).chatJson(SYSTEM_PROMPT, userPrompt);
 		AiBranchDraft.Envelope envelope = parse(json);
 
 		int sortOrder = 0;

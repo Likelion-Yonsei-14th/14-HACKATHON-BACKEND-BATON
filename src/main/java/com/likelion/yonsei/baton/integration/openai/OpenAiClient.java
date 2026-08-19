@@ -1,6 +1,7 @@
 package com.likelion.yonsei.baton.integration.openai;
 
 import com.likelion.yonsei.baton.common.exception.BusinessException;
+import com.likelion.yonsei.baton.integration.llm.ChatCompletionClient;
 import com.likelion.yonsei.baton.integration.openai.dto.OpenAiChatMessage;
 import com.likelion.yonsei.baton.integration.openai.dto.OpenAiChatRequest;
 import com.likelion.yonsei.baton.integration.openai.dto.OpenAiChatResponse;
@@ -19,7 +20,7 @@ import java.net.SocketTimeoutException;
 import java.util.List;
 
 @Component
-public class OpenAiClient {
+public class OpenAiClient implements ChatCompletionClient {
 
 	private static final Logger log = LoggerFactory.getLogger(OpenAiClient.class);
 

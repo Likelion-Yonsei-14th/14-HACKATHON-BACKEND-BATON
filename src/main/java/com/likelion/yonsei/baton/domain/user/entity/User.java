@@ -2,6 +2,8 @@ package com.likelion.yonsei.baton.domain.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,6 +37,10 @@ public class User {
 
 	private String language;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "llm_provider", nullable = false, length = 30)
+	private LlmProvider llmProvider = LlmProvider.LOCAL;
+
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
@@ -60,7 +66,7 @@ public class User {
 		this.apiKeyHash = newApiKeyHash;
 	}
 
-	public void update(String name, String timezone, String language) {
+	public void update(String name, String timezone, String language, LlmProvider llmProvider) {
 		if (name != null) {
 			this.name = name;
 		}
@@ -69,6 +75,9 @@ public class User {
 		}
 		if (language != null) {
 			this.language = language;
+		}
+		if (llmProvider != null) {
+			this.llmProvider = llmProvider;
 		}
 	}
 
@@ -98,6 +107,10 @@ public class User {
 
 	public String getLanguage() {
 		return language;
+	}
+
+	public LlmProvider getLlmProvider() {
+		return llmProvider;
 	}
 
 	public LocalDateTime getCreatedAt() {
