@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public record ExecutionResponse(
 		Long id,
 		Long batonId,
+		Long branchId,
 		Long classificationId,
 		Long resultMessageId,
 		ActionType actionType,
@@ -22,6 +23,7 @@ public record ExecutionResponse(
 		return new ExecutionResponse(
 				execution.getId(),
 				execution.getBatonId(),
+				execution.getBranchId(),
 				execution.getClassificationId(),
 				execution.getResultMessageId(),
 				execution.getActionType(),

@@ -7,7 +7,8 @@ public enum BatonErrorCode implements ErrorCode {
 
 	BATON_NOT_FOUND(HttpStatus.NOT_FOUND, "BATON-001", "BATON을 찾을 수 없습니다."),
 	INVALID_STATUS_TRANSITION(HttpStatus.CONFLICT, "BATON-002", "현재 상태에서 허용되지 않는 작업입니다."),
-	TRIGGER_MESSAGE_ALREADY_USED(HttpStatus.CONFLICT, "BATON-003", "이미 다른 BATON이 연결된 메시지입니다.");
+	TRIGGER_MESSAGE_ALREADY_USED(HttpStatus.CONFLICT, "BATON-003", "이미 다른 BATON이 연결된 메시지입니다."),
+	TRIGGER_MESSAGE_NOT_IN_CONVERSATION(HttpStatus.BAD_REQUEST, "BATON-004", "trigger_message_id가 해당 대화의 메시지가 아닙니다.");
 
 	private final HttpStatus status;
 	private final String code;

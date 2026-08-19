@@ -28,6 +28,9 @@ public class User {
 	@Column(name = "password_hash", nullable = false)
 	private String passwordHash;
 
+	@Column(name = "api_key_hash", nullable = false, unique = true, length = 64)
+	private String apiKeyHash;
+
 	private String timezone;
 
 	private String language;
@@ -43,12 +46,18 @@ public class User {
 	protected User() {
 	}
 
-	public User(String email, String name, String passwordHash, String timezone, String language) {
+	public User(String email, String name, String passwordHash, String apiKeyHash, String timezone, String language) {
 		this.email = email;
 		this.name = name;
 		this.passwordHash = passwordHash;
+		this.apiKeyHash = apiKeyHash;
 		this.timezone = timezone;
 		this.language = language;
+	}
+
+	/** Rotates the stored hash so the previously issued api_key stops working immediately. */
+	public void rotateApiKeyHash(String newApiKeyHash) {
+		this.apiKeyHash = newApiKeyHash;
 	}
 
 	public void update(String name, String timezone, String language) {
@@ -77,6 +86,10 @@ public class User {
 
 	public String getPasswordHash() {
 		return passwordHash;
+	}
+
+	public String getApiKeyHash() {
+		return apiKeyHash;
 	}
 
 	public String getTimezone() {

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public record ClassificationResponse(
 		Long id,
 		Long batonId,
+		Long replyMessageId,
 		Long selectedBranchId,
 		BigDecimal confidence,
 		boolean isAmbiguous,
@@ -34,6 +35,7 @@ public record ClassificationResponse(
 		return new ClassificationResponse(
 				classification.getId(),
 				classification.getBatonId(),
+				classification.getReplyMessageId(),
 				classification.getSelectedBranchId(),
 				classification.getConfidence(),
 				classification.isAmbiguous(),

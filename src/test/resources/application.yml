@@ -29,3 +29,6 @@ slack:
   client-secret: test-client-secret
   signing-secret: test-signing-secret
   redirect-uri: http://localhost:8080/api/platform-connections/slack/callback
+
+app:
+  frontend-url: http://localhost:5173

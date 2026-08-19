@@ -46,7 +46,7 @@ public class MessageController {
 
 	@GetMapping("/messages/{id}")
 	public ApiResponse<MessageResponse> getById(@CurrentUserId Long userId, @PathVariable Long id) {
-		Message message = messageService.getById(id);
+		Message message = messageService.getById(id, userId);
 		return ApiResponse.success(MessageResponse.from(message));
 	}
 

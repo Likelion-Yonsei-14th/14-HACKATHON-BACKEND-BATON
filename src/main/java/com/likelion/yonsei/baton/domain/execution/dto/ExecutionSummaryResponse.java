@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 public record ExecutionSummaryResponse(
 		Long id,
+		Long branchId,
 		Long classificationId,
 		Long resultMessageId,
 		ActionType actionType,
@@ -19,6 +20,7 @@ public record ExecutionSummaryResponse(
 	public static ExecutionSummaryResponse from(Execution execution) {
 		return new ExecutionSummaryResponse(
 				execution.getId(),
+				execution.getBranchId(),
 				execution.getClassificationId(),
 				execution.getResultMessageId(),
 				execution.getActionType(),
