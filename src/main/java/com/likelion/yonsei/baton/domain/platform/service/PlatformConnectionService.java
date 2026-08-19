@@ -164,10 +164,14 @@ public class PlatformConnectionService {
 		return new ConversationsSyncResult(created, updated, now);
 	}
 
-	/** Best-effort — a Slack user lookup failure shouldn't stop the rest of the conversation sync. */
+	/**
+	 * Best-effort — a Slack user lookup failure shouldn't stop the rest of the conversation sync.
+	 * Returns null (not the raw id) on failure so the next sync retries instead of treating a
+	 * fallback value as if it were already resolved.
+	 */
 	private String resolveDisplayName(String accessToken, String slackUserId) {
 		SlackUserInfoResponse info = slackApiClient.getUserInfo(accessToken, slackUserId);
-		return info != null ? info.resolveDisplayName(slackUserId) : slackUserId;
+		return info != null ? info.resolveDisplayName(slackUserId) : null;
 	}
 
 	public record ConversationsSyncResult(int createdCount, int updatedCount, LocalDateTime lastSyncedAt) {
