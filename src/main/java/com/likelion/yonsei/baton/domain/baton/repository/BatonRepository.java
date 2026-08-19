@@ -15,6 +15,8 @@ public interface BatonRepository extends JpaRepository<Baton, Long> {
 
 	Optional<Baton> findByIdAndUserId(Long id, Long userId);
 
+	List<Baton> findByStatus(BatonStatus status);
+
 	@Query("""
 			select b from Baton b
 			where b.userId = :userId
