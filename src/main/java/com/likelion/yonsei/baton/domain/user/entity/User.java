@@ -41,6 +41,9 @@ public class User {
 	@Column(name = "llm_provider", nullable = false, length = 30)
 	private LlmProvider llmProvider = LlmProvider.LOCAL;
 
+	@Column(name = "is_admin", nullable = false)
+	private boolean admin = false;
+
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
@@ -111,6 +114,10 @@ public class User {
 
 	public LlmProvider getLlmProvider() {
 		return llmProvider;
+	}
+
+	public boolean isAdmin() {
+		return admin;
 	}
 
 	public LocalDateTime getCreatedAt() {
