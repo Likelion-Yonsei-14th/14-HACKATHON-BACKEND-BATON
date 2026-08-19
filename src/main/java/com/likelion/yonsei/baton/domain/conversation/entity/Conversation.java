@@ -108,6 +108,10 @@ public class Conversation {
 		return counterpartName;
 	}
 
+	public void updateCounterpartName(String counterpartName) {
+		this.counterpartName = counterpartName;
+	}
+
 	public String getCounterpartTimezone() {
 		return counterpartTimezone;
 	}

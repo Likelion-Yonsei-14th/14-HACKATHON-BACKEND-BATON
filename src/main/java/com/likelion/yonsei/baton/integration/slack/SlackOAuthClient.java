@@ -18,7 +18,7 @@ public class SlackOAuthClient {
 
 	private static final Logger log = LoggerFactory.getLogger(SlackOAuthClient.class);
 	private static final String USER_SCOPES =
-			"channels:history,channels:read,chat:write,groups:history,groups:read,im:history,im:read,mpim:history,mpim:read";
+			"channels:history,channels:read,chat:write,groups:history,groups:read,im:history,im:read,mpim:history,mpim:read,users:read";
 
 	private final RestClient slackRestClient;
 	private final SlackProperties properties;
