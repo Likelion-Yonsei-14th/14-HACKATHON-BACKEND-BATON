@@ -89,14 +89,24 @@ public class PlatformConnectionService {
 		LocalDateTime expiresAt = token.expiresIn() != null
 				? LocalDateTime.now(clock).plusSeconds(token.expiresIn())
 				: null;
+		String accessTokenEncrypted = tokenEncryptor.encrypt(accessToken);
+		String refreshTokenEncrypted = token.refreshToken() != null ? tokenEncryptor.encrypt(token.refreshToken()) : null;
 
-		PlatformConnection connection = new PlatformConnection(
+		PlatformConnection connection = platformConnectionRepository
+				.findByUserIdAndPlatformTypeAndWorkspaceId(userId, PlatformType.SLACK, workspaceId)
+				.orElse(null);
+		if (connection != null) {
+			connection.reconnect(workspaceName, accessTokenEncrypted, refreshTokenEncrypted, expiresAt);
+			return connection;
+		}
+
+		connection = new PlatformConnection(
 				userId,
 				PlatformType.SLACK,
 				workspaceId,
 				workspaceName,
-				tokenEncryptor.encrypt(accessToken),
-				token.refreshToken() != null ? tokenEncryptor.encrypt(token.refreshToken()) : null,
+				accessTokenEncrypted,
+				refreshTokenEncrypted,
 				expiresAt
 		);
 		return platformConnectionRepository.save(connection);

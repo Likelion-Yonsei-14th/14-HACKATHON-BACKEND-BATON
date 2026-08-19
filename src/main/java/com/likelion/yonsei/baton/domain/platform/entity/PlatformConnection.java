@@ -80,6 +80,20 @@ public class PlatformConnection {
 		this.connectionStatus = ConnectionStatus.CONNECTED;
 	}
 
+	/** Re-authorizing an already-known workspace (reconnect after disconnect/token expiry) refreshes tokens in place instead of inserting a duplicate row. */
+	public void reconnect(
+			String workspaceName,
+			String accessTokenEncrypted,
+			String refreshTokenEncrypted,
+			LocalDateTime tokenExpiresAt
+	) {
+		this.workspaceName = workspaceName;
+		this.accessTokenEncrypted = accessTokenEncrypted;
+		this.refreshTokenEncrypted = refreshTokenEncrypted;
+		this.tokenExpiresAt = tokenExpiresAt;
+		this.connectionStatus = ConnectionStatus.CONNECTED;
+	}
+
 	public void markSynced(LocalDateTime syncedAt) {
 		this.lastSyncedAt = syncedAt;
 		this.connectionStatus = ConnectionStatus.CONNECTED;
