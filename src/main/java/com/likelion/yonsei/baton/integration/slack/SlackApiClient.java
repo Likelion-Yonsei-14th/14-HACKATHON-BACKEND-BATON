@@ -43,7 +43,11 @@ public class SlackApiClient {
 	public SlackUserInfoResponse getUserInfo(String accessToken, String userId) {
 		try {
 			SlackUserInfoResponse response = get(accessToken, "/users.info?user=%s".formatted(userId), SlackUserInfoResponse.class);
-			return response.ok() ? response : null;
+			if (!response.ok()) {
+				log.warn("Slack users.info rejected for user={}: {}", userId, response.error());
+				return null;
+			}
+			return response;
 		} catch (Exception e) {
 			log.warn("Slack users.info failed for user={}", userId, e);
 			return null;
