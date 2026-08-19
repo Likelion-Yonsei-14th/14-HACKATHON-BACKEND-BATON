@@ -8,6 +8,7 @@ public record ConversationSummaryResponse(
 		Long platformConnectionId,
 		String externalConversationId,
 		ConversationType conversationType,
+		String title,
 		String counterpartName,
 		String counterpartTimezone
 ) {
@@ -18,6 +19,7 @@ public record ConversationSummaryResponse(
 				conversation.getPlatformConnectionId(),
 				conversation.getExternalConversationId(),
 				conversation.getConversationType(),
+				conversation.getTitle(),
 				conversation.getCounterpartName(),
 				conversation.getCounterpartTimezone()
 		);
