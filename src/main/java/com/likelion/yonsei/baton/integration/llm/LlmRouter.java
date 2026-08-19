@@ -40,6 +40,11 @@ public class LlmRouter {
 		return isOpenAi(userId) ? openAiClient : localLlmClient;
 	}
 
+	/** Callers use this to pick a simpler prompt variant for the local model — it needs a lot more hand-holding than OpenAI. */
+	public boolean isLocal(Long userId) {
+		return !isOpenAi(userId);
+	}
+
 	/** Name recorded on Classification/Branch rows for debugging — reflects whichever provider actually ran. */
 	public String modelNameForUser(Long userId) {
 		return isOpenAi(userId) ? openAiProperties.model() : localLlmProperties.model();

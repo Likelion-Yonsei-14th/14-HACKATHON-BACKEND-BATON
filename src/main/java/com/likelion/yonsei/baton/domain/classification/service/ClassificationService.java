@@ -47,6 +47,27 @@ public class ClassificationService {
 			"contains_new_question": boolean, "extracted_data": object, "reasoning_summary": string}
 			""";
 
+	/** Qwen3 0.6B needs a much shorter prompt plus a worked example to reliably produce this shape at all. */
+	private static final String LOCAL_SYSTEM_PROMPT = """
+			/no_think
+			Pick which branch id the reply matches. If the reply itself asks a new question (not just \
+			answering), set contains_new_question true and selected_branch_id null, regardless of confidence. \
+			Write reasoning_summary in the SAME language as the reply (Korean if Korean).
+
+			Output ONLY this JSON:
+			{"selected_branch_id": number or null, "confidence": number, "ambiguous": boolean, \
+			"contains_new_question": boolean, "extracted_data": {}, "reasoning_summary": string}
+
+			Example 1 — branches: [{"id":1,"condition":"상대가 동의함"},{"id":2,"condition":"그 외 모든 경우"}], \
+			reply: "네 좋아요":
+			{"selected_branch_id": 1, "confidence": 0.9, "ambiguous": false, "contains_new_question": false, \
+			"extracted_data": {}, "reasoning_summary": "상대가 동의를 표현함"}
+
+			Example 2 — same branches, reply: "네 가능합니다! 몇시가 편하신가요?" (reply asks its own question back):
+			{"selected_branch_id": null, "confidence": 0.3, "ambiguous": false, "contains_new_question": true, \
+			"extracted_data": {}, "reasoning_summary": "상대가 동의하면서 새로운 질문(시간)을 되물음"}
+			""";
+
 	private final ClassificationRepository classificationRepository;
 	private final BatonService batonService;
 	private final LlmRouter llmRouter;
@@ -85,7 +106,8 @@ public class ClassificationService {
 	@Transactional
 	public Classification classify(Baton baton, Message reply, List<Branch> branches) {
 		String userPrompt = buildUserPrompt(reply, branches);
-		String json = llmRouter.forUser(baton.getUserId()).chatJson(SYSTEM_PROMPT, userPrompt);
+		String systemPrompt = llmRouter.isLocal(baton.getUserId()) ? LOCAL_SYSTEM_PROMPT : SYSTEM_PROMPT;
+		String json = llmRouter.forUser(baton.getUserId()).chatJson(systemPrompt, userPrompt);
 		AiClassificationResult result = parse(json);
 
 		boolean branchIdValid = result.selectedBranchId() != null
