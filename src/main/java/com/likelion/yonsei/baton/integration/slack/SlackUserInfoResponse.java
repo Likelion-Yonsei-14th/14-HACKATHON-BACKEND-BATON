@@ -9,6 +9,8 @@ public record SlackUserInfoResponse(
 	public record SlackUser(
 			String id,
 			String name,
+			/** IANA tz name, e.g. "Asia/Seoul" — top-level on the user object, not under profile. */
+			String tz,
 			SlackUserProfile profile
 	) {
 	}
@@ -31,5 +33,10 @@ public record SlackUserInfoResponse(
 			return user.profile().realName();
 		}
 		return user.name() != null ? user.name() : fallbackId;
+	}
+
+	/** null if the user hasn't set a timezone or the lookup failed entirely. */
+	public String timezone() {
+		return user != null ? user.tz() : null;
 	}
 }

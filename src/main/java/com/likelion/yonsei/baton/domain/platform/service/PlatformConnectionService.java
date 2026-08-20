@@ -136,15 +136,27 @@ public class PlatformConnectionService {
 					connection.getId(), channel.id(), null);
 			if (existing.isPresent()) {
 				Conversation existingConversation = existing.get();
-				if (type == ConversationType.DM && channel.user() != null && existingConversation.getCounterpartName() == null) {
-					existingConversation.updateCounterpartName(resolveDisplayName(accessToken, channel.user()));
+				boolean needsName = type == ConversationType.DM && channel.user() != null && existingConversation.getCounterpartName() == null;
+				boolean needsTimezone = type == ConversationType.DM && channel.user() != null && existingConversation.getCounterpartTimezone() == null;
+				if (needsName || needsTimezone) {
+					SlackUserInfoResponse info = slackApiClient.getUserInfo(accessToken, channel.user());
+					if (needsName) {
+						existingConversation.updateCounterpartName(info != null ? info.resolveDisplayName(channel.user()) : null);
+					}
+					if (needsTimezone) {
+						existingConversation.updateCounterpartTimezone(info != null ? info.timezone() : null);
+					}
 				}
 				updated++;
 				continue;
 			}
-			String counterpartName = type == ConversationType.DM && channel.user() != null
-					? resolveDisplayName(accessToken, channel.user())
+			SlackUserInfoResponse userInfo = type == ConversationType.DM && channel.user() != null
+					? slackApiClient.getUserInfo(accessToken, channel.user())
 					: null;
+			String counterpartName = type == ConversationType.DM && channel.user() != null
+					? (userInfo != null ? userInfo.resolveDisplayName(channel.user()) : null)
+					: null;
+			String counterpartTimezone = userInfo != null ? userInfo.timezone() : null;
 			Conversation conversation = new Conversation(
 					connection.getId(),
 					channel.id(),
@@ -153,7 +165,7 @@ public class PlatformConnectionService {
 					channel.name(),
 					channel.user(),
 					counterpartName,
-					null
+					counterpartTimezone
 			);
 			conversationRepository.save(conversation);
 			created++;
@@ -162,16 +174,6 @@ public class PlatformConnectionService {
 		LocalDateTime now = LocalDateTime.now(clock);
 		connection.markSynced(now);
 		return new ConversationsSyncResult(created, updated, now);
-	}
-
-	/**
-	 * Best-effort — a Slack user lookup failure shouldn't stop the rest of the conversation sync.
-	 * Returns null (not the raw id) on failure so the next sync retries instead of treating a
-	 * fallback value as if it were already resolved.
-	 */
-	private String resolveDisplayName(String accessToken, String slackUserId) {
-		SlackUserInfoResponse info = slackApiClient.getUserInfo(accessToken, slackUserId);
-		return info != null ? info.resolveDisplayName(slackUserId) : null;
 	}
 
 	public record ConversationsSyncResult(int createdCount, int updatedCount, LocalDateTime lastSyncedAt) {

@@ -10,7 +10,8 @@ public record BatonSummaryResponse(
 		Long conversationId,
 		BatonStatus status,
 		boolean autoSendEnabled,
-		LocalDateTime expiresAt
+		LocalDateTime expiresAt,
+		LocalDateTime activatedAt
 ) {
 
 	public static BatonSummaryResponse from(Baton baton) {
@@ -19,7 +20,8 @@ public record BatonSummaryResponse(
 				baton.getConversationId(),
 				baton.getStatus(),
 				baton.isAutoSendEnabled(),
-				baton.getExpiresAt()
+				baton.getExpiresAt(),
+				baton.getActivatedAt()
 		);
 	}
 }
