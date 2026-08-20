@@ -17,6 +17,8 @@ public interface BatonRepository extends JpaRepository<Baton, Long> {
 
 	List<Baton> findByStatus(BatonStatus status);
 
+	List<Baton> findByStatusAndExpiresAtBefore(BatonStatus status, LocalDateTime before);
+
 	@Query("""
 			select b from Baton b
 			where b.userId = :userId

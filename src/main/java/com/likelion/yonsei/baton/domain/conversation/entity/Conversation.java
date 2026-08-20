@@ -116,6 +116,10 @@ public class Conversation {
 		return counterpartTimezone;
 	}
 
+	public void updateCounterpartTimezone(String counterpartTimezone) {
+		this.counterpartTimezone = counterpartTimezone;
+	}
+
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
